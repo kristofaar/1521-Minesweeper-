@@ -1,0 +1,53 @@
+SUBSET 0 - REVEALING THE GRID
+        li      $t0, 0          # $t0 = row 
+reveal_grid_loop_row:
+        la      $t4, grid       # $t4 = grid  
+        bge     $t0, N_ROWS, reveal_grid_loop_row_end
+        mul     $t2, $t0, N_COLS
+        add     $t4, $t4, $t2   # $t4 = grid + rows  
+          
+        li      $t1, 0          # $t1 = col        
+reveal_grid_loop_col:
+        bge     $t1, N_COLS, reveal_grid_loop_col_end
+        add     $t4, $t4, $t1   # $t4 = grid + rows + col
+        lb      $t5, ($t4)      # $t5 = byte 
+        ori      $t5, $t5, IS_RVLD_MASK  # $t5 = rvl byte
+        sb      $t5, ($t4)
+        addi    $t1, $t1, 1
+        j       reveal_grid_loop_col     
+reveal_grid_loop_col_end:          
+              
+        addi    $t0, $t0, 1
+        j       reveal_grid_loop_row
+reveal_grid_loop_row_end:  
+        
+
+
+
+
+SUBSET 1 - PLACING BOMBS
+  li      $t0, 0
+        lw      $s1, total_bombs      
+place_bombs_loop:
+        bge     $t0, $s1, place_bomb_loop_end
+        jal     place_single_bomb
+        addi    $t0, $t0, 1
+        j       place_bombs_loop
+place_bomb_loop_end:
+
+
+
+
+
+li      $t0, 0
+        lw      $s1, total_bombs  
+        move    $s0, $a0
+        move    $s1, $a1     
+place_bombs_loop:
+        bge     $t0, $s1, place_bomb_loop_end
+        jal     place_single_bomb
+        addi    $t0, $t0, 1
+        move    $a0, $s0
+        move    $a1, $s1  
+        j       place_bombs_loop
+place_bomb_loop_end:
